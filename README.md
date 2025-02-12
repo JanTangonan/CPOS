@@ -6,6 +6,9 @@ npx create-react-app cpos-frontend
 CD cpos-frontend
 npm install firebase axios react-router-dom
 npm install firebase
+
+npm install html5-qrcode
+
 npm install react-qr-barcode-scanner
 
 npm install -g ngrok
