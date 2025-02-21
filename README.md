@@ -9,9 +9,7 @@ npm install firebase
 
 npm install html5-qrcode
 
-npm install react-qr-barcode-scanner
-
-npm install -g ngrok
-
 npm start --host 0.0.0.0
-ngrok http 3000
+
+---------------------------------------------------------------------------------------------------
+

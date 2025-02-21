@@ -1,10 +1,10 @@
 import React from "react";
-import BarcodeScanner from "./BarcodeScanner.js";
+import BarcodeScanner from "./components/barcodeScanner";
 
 function App() {
   return (
     <div>
-      <h1>POS System - Barcode Scanner Test</h1>
+      <h1>Clinic POS - Barcode Scanner</h1>
       <BarcodeScanner />
     </div>
   );
