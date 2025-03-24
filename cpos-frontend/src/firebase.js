@@ -1,15 +1,15 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, query, where, addDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, query, where, addDoc, orderBy, limit, Timestamp  } from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBRZkvDC-7t4K1CYeFK1LPd3jIJdcXRWFU",
-    authDomain: "cpos-afc17.firebaseapp.com",
-    projectId: "cpos-afc17",
-    storageBucket: "cpos-afc17.firebasestorage.app",
-    messagingSenderId: "759557425052",
-    appId: "1:759557425052:web:44af75d5f31952e33a6a59",
-    measurementId: "G-85FX17Z7XN"
-  };
+  apiKey: "AIzaSyBRZkvDC-7t4K1CYeFK1LPd3jIJdcXRWFU",
+  authDomain: "cpos-afc17.firebaseapp.com",
+  projectId: "cpos-afc17",
+  storageBucket: "cpos-afc17.firebasestorage.app",
+  messagingSenderId: "759557425052",
+  appId: "1:759557425052:web:44af75d5f31952e33a6a59",
+  measurementId: "G-85FX17Z7XN"
+};
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -26,6 +26,7 @@ const getProductByBarcode = async (barcode) => {
   return null; // No product found
 };
 
+// Function to save sale transaction
 const saveSaleToFirestore = async (cartItems, branchID) => {
   try {
     if (!cartItems || cartItems.length === 0) {
@@ -63,4 +64,101 @@ const saveSaleToFirestore = async (cartItems, branchID) => {
   }
 };
 
-export { db, getProductByBarcode, saveSaleToFirestore };
+// Function to fetch the latest transactions
+const getLatestTransactions = async (limitCount = 5) => {
+  try {
+    const transactionsRef = collection(db, "sales");
+    const q = query(transactionsRef, orderBy("timestamp", "desc"), limit(limitCount));
+    const querySnapshot = await getDocs(q);
+
+    return querySnapshot.docs.map((doc) => ({
+      id: doc.id, ...doc.data(),
+    }));
+  } catch (error) {
+    console.error("Error fetching latest transactions:", error);
+    return [];
+  }
+};
+
+// Function to fetch transactions by branch ID
+const getTransactionsByBranch = async (branchID) => {
+  try {
+    const salesCollection = collection(db, "sales");
+    const q = query(salesCollection, where("branchID", "==", branchID), orderBy("timestamp", "desc"));
+    const querySnapshot = await getDocs(q);
+
+    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error("Error fetching transactions by branch:", error);
+    return [];
+  }
+};
+
+// Function to fetch transactions by date
+const getTransactionsByDate = async (date) => {
+  try {
+    const salesCollection = collection(db, "sales");
+
+    // Convert the date (YYYY-MM-DD) to a timestamp range
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0); // Set time to 00:00:00
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999); // Set time to 23:59:59
+
+    const q = query(
+      salesCollection,
+      where("timestamp", ">=", startOfDay.getTime()),
+      where("timestamp", "<=", endOfDay.getTime()),
+      orderBy("timestamp", "desc")
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    console.log("Number of transactions fetched:", querySnapshot.docs.length);
+    
+    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error("Error fetching transactions by date:", error);
+    return [];
+  }
+};
+
+// Function to fetch transactions by date
+const getTransactionsByBranchAndDate = async (branchID, date) => {
+  try {
+    const salesCollection = collection(db, "sales");
+
+    // Convert the date (YYYY-MM-DD) to a timestamp range
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0); // Set time to 00:00:00
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999); // Set time to 23:59:59
+
+    const q = query(
+      salesCollection,
+      where("branchID", "==", branchID),
+      where("timestamp", ">=", startOfDay.getTime()),
+      where("timestamp", "<=", endOfDay.getTime()),
+      orderBy("timestamp", "desc")
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    console.log("Number of transactions fetched:", querySnapshot.docs.length);
+    
+    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error("Error fetching transactions by date:", error);
+    return [];
+  }
+};
+
+export {
+  db,
+  getProductByBarcode,
+  saveSaleToFirestore,
+  getLatestTransactions,
+  getTransactionsByBranch,
+  getTransactionsByDate,
+  getTransactionsByBranchAndDate
+};

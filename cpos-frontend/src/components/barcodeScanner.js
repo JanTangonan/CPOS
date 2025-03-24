@@ -107,12 +107,12 @@ const BarcodeScanner = () => {
     }
 
     try {
-      const branchID = "BR001"; // This should be dynamically set if needed
+      const branchID = "BR002"; // This should be dynamically set if needed
       await saveSaleToFirestore(cartItems, branchID);
-  
+
       showToast("Checkout successful! Sale recorded.", "success");
-      setCartItems([]);  
-      setCheckoutModal(false);  
+      setCartItems([]);
+      setCheckoutModal(false);
     } catch (error) {
       console.error("Checkout error:", error);
       showToast("Failed to record sale. Please try again.", "error");
@@ -121,13 +121,17 @@ const BarcodeScanner = () => {
 
   return (
     <div className="container mt-4">
+      <button className="btn btn-primary mb-3" onClick={() => navigate("/landingpage")}>
+        ← Back to Home
+      </button>
+
       <h1>Clinic POS - Barcode Scanner</h1>
       {/* Toast Notification */}
       <ToastContainer />
 
       {/* Scanner Section */}
       <div className="card p-3">
-        <h2>📷 Scan a Product</h2>
+        <h2>Scan a Product</h2>
         <button className="btn btn-light mt-2" onClick={startScanner}>
           Start Scanner
         </button>
@@ -137,7 +141,7 @@ const BarcodeScanner = () => {
       {/* Scanned Product */}
       {scannedProduct && (
         <div className="card p-3 mt-3">
-          <h3>🔍 Scanned Product</h3>
+          <h3>Scanned Product</h3>
           <p><strong>Barcode:</strong> {scannedProduct.barcode}</p>
           <p><strong>Name:</strong> {scannedProduct.productName}</p>
           <p><strong>Price:</strong> PHP {scannedProduct.price}</p>
@@ -147,7 +151,7 @@ const BarcodeScanner = () => {
 
       {/* Virtual Cart */}
       <div className="card p-3 mt-3">
-        <h2>🛒 Virtual Cart</h2>
+        <h2>Virtual Cart</h2>
         {cartItems.length > 0 ? (
           <>
             <ul className="list-group">
@@ -163,7 +167,7 @@ const BarcodeScanner = () => {
                 </li>
               ))}
             </ul>
-            <h3 className="mt-3">💰 Total: PHP {calculateTotal()}</h3>
+            <h3 className="mt-3">Total: PHP {calculateTotal()}</h3>
             <button className="btn btn-success w-100 mt-2" onClick={() => setCheckoutModal(true)}>Checkout</button>
           </>
         ) : (
@@ -173,7 +177,7 @@ const BarcodeScanner = () => {
 
       {/* Manual Barcode Entry */}
       <div className="card p-3 mt-3">
-        <h2>📝 Manual Barcode Entry</h2>
+        <h2> Manual Barcode Entry</h2>
         <div className="input-group">
           <input type="text" className="form-control" value={manualBarcode} onChange={(e) => setManualBarcode(e.target.value)} placeholder="Enter barcode manually" />
           <button className="btn btn-primary" onClick={handleManualEntry}>Add</button>
@@ -199,8 +203,8 @@ const BarcodeScanner = () => {
             </div>
           </div>
         </div>
-    )}
-  </div>
+      )}
+    </div>
   );
 };
 
