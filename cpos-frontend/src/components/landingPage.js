@@ -1,23 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getLatestTransactions } from "../firebase"; 
 
 const LandingPage = () => {
-  // Mock transaction data (replace with API call later)
-  const transactions = [
-    { branchID: 1, date: "Item A", readableTimestamp: "2024-02-21", totalAmount: "Completed" },
-    { branchID: 2, date: "date B", readableTimestamp: "2024-02-20", totalAmount: "Pending" },
-    { branchID: 3, date: "date C", readableTimestamp: "2024-02-19", totalAmount: "Completed" },
-    { branchID: 4, date: "date D", readableTimestamp: "2024-02-18", totalAmount: "Pending" },
-    { branchID: 5, date: "Item F", readableTimestamp: "2024-02-17", totalAmount: "Completed" },
-  ];
   const navigate = useNavigate();
+  const [transactions, setTransactions] = useState([]); // Store transactions
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const latestTransactions = await getLatestTransactions(); // Fetch from Firestore
+        setTransactions(latestTransactions);
+      } catch (err) {
+        console.error("Error fetching transactions:", err);
+        setError("Failed to load transactions.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
 
   return (
     <div className="container mt-5">
       {/* Header Section */}
       <div className="text-center mb-5">
         <h1 className="display-4 fw-bold">CPOS</h1>
-        <p className="text-muted">Centralized Point of Sale System</p>
+        <p className="text-muted">Clinic Point of Sale System</p>
       </div>
 
       {/* Recent Transactions */}
@@ -26,7 +38,11 @@ const LandingPage = () => {
           <h5 className="mb-0">Recent Transactions</h5>
         </div>
         <div className="card-body">
-          {transactions.length > 0 ? (
+          {loading ? (
+            <p className="text-center text-muted">Loading transactions...</p>
+          ) : error ? (
+            <p className="text-center text-danger">{error}</p>
+          ) : transactions.length > 0 ? (
             <table className="table table-hover">
               <thead>
                 <tr>
@@ -37,23 +53,12 @@ const LandingPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {transactions.map((tx) => (
-                  <tr key={tx.branchID}>
+                {transactions.map((tx, index) => (
+                  <tr key={index}>
                     <td>{tx.branchID}</td>
                     <td>{tx.date}</td>
                     <td>{tx.readableTimestamp}</td>
                     <td>{tx.totalAmount}</td>
-                    {/* <td>
-                      <span
-                        className={`badge ${
-                          tx.status === "Completed"
-                            ? "bg-success"
-                            : "bg-warning text-dark"
-                        }`}
-                      >
-                        {tx.status}
-                      </span>
-                    </td> */}
                   </tr>
                 ))}
               </tbody>
@@ -72,16 +77,16 @@ const LandingPage = () => {
             style={{ height: "100px" }}
             onClick={() => navigate("/barcodescanner")}
           >
-            📷 Start Scanning
+            Start Scanning
           </button>
         </div>
         <div className="col-md-6 mb-3">
           <button
             className="btn btn-secondary btn-lg w-100 d-flex align-items-center justify-content-center gap-2"
             style={{ height: "100px" }}
-            onClick={() => navigate("/history")}
+            onClick={() => navigate("/transactionhistory")}
           >
-            📜 View Transaction History
+            View Transaction History
           </button>
         </div>
       </div>
