@@ -5,6 +5,7 @@ import LoginPage from "./components/loginPage";
 import LandingPage from "./components/landingPage";
 import BarcodeScanner from "./components/barcodeScanner";
 import TransactionHistory from "./components/transactionHistory";
+import Dashboard from "./components/dashboard";
 
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path="/landingpage" element={<LandingPage />} />
         <Route path="/barcodescanner" element={<BarcodeScanner />} />
         <Route path="/transactionhistory" element={<TransactionHistory />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </Router>
   );
