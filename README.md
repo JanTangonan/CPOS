@@ -13,6 +13,3 @@ npm install bootstrap
 npm install react-toastify
 
 npm start --host 0.0.0.0
-
-
-
